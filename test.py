@@ -11,6 +11,9 @@ width = 40
 height = 60
 vel = 5
 run = True
+jump = False
+jump_count = 10
+
 
 while run:
 	pygame.time.delay(100)
@@ -22,14 +25,27 @@ while run:
 	# keyboard
 	keys = pygame.key.get_pressed()
 
-	if keys[pygame.K_LEFT]:
+	if keys[pygame.K_LEFT] and x > vel:
 		x -= vel
-	if keys[pygame.K_RIGHT]:
+	if keys[pygame.K_RIGHT] and x < 500 - width - vel:
 		x += vel
-	if keys[pygame.K_UP]:
-		y -= vel
-	if keys[pygame.K_DOWN]:
-		y += vel
+	if not (jump):	
+		if keys[pygame.K_UP] and y > vel:
+			y -= vel
+		if keys[pygame.K_DOWN] and y < 500 - height - vel:
+			y += vel
+		if keys[pygame.K_SPACE]:
+			jump = True
+	else:
+		if jump_count >= -10:
+			neg = 1
+			if jump_count < 0:
+				neg = -1		
+			y = (jump_count ** 2) * 0.5
+			jump_count -= 1
+		else:
+			jump = False
+			jump_count = 10
 
 	# graphic
 	window.fill((0, 0, 0))
