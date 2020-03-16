@@ -35,7 +35,6 @@ class cube(object):
         
 
 
-
 class snake(object):
     body = []
     turns = {}
@@ -121,7 +120,7 @@ class snake(object):
 
     def draw(self, surface):
         for i, c in enumerate(self.body):
-            if i ==0:
+            if i == 0:
                 c.draw(surface, True)
             else:
                 c.draw(surface)
@@ -187,8 +186,8 @@ def main():
     clock = pygame.time.Clock()
     
     while flag:
-        pygame.time.delay(50)
-        clock.tick(10)
+        pygame.time.delay(40)
+        clock.tick(8)
         s.move()
         if s.body[0].pos == snack.pos:
             s.addCube()
@@ -204,4 +203,5 @@ def main():
             
         redrawWindow(win)
 
-main()
+if __name__ == '__main__':
+    main()

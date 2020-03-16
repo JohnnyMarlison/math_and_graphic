@@ -9,8 +9,7 @@ x = 50
 y = 50
 width = 40
 height = 60
-vel = 5
-run = True
+vel = 5 
 jump = False
 jump_count = 10
 
