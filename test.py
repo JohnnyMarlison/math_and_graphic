@@ -12,7 +12,7 @@ height = 60
 vel = 5 
 jump = False
 jump_count = 10
-
+run = True
 
 while run:
 	pygame.time.delay(100)
