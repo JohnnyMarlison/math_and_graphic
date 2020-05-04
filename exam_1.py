@@ -1,6 +1,7 @@
 import math
 import random
 import pygame
+from pygame import font
 import tkinter as tk
 from tkinter import messagebox
 
@@ -44,6 +45,9 @@ class snake(object):
         self.body.append(self.head)
         self.dirnx = 0
         self.dirny = 1
+
+    def get_length(self):
+    	return len(self.body)
 
     def move(self):
         for event in pygame.event.get():
@@ -138,12 +142,16 @@ class snake(object):
 #         pygame.draw.line(surface, (255,255,255), (x,0),(x,w))
 #         pygame.draw.line(surface, (255,255,255), (0,y),(w,y))
         
+def get_score_text(font_module, snake):
+	return font_module.render('Score: ' + str((snake.get_length() - 1) * 10), True, (255, 255, 255))
 
-def redrawWindow(surface):
+
+def redrawWindow(surface, font_module):
     global rows, width, s, snack
     surface.fill((0, 0, 0))
     s.draw(surface)
     snack.draw(surface)
+    surface.blit(get_score_text(font_module, s), (10, 500))
     # drawGrid(width,rows, surface)
     pygame.display.update()
 
@@ -173,12 +181,17 @@ def message_box(subject, content):
     except:
         pass
 
-
 def main():
     global width, rows, s, snack
-    width = 500
+    width = 525
     rows = 20
+
+    pygame.font.init()
+    _font_name = pygame.font.match_font('Times New Roman')
+    _font_module = pygame.font.Font(_font_name, 24)
+
     win = pygame.display.set_mode((width, width))
+
     s = snake((255, 0, 0), (10, 10))
     snack = cube(randomSnack(rows, s), color = (0, 255, 0))
     flag = True
@@ -196,12 +209,12 @@ def main():
         for x in range(len(s.body)):
             if s.body[x].pos in list(map(lambda z:z.pos,s.body[x + 1:])):
                 print('Score: ', len(s.body))
-                message_box('You Lost!', 'Play again...')
+                message_box('You Lose!', 'Play again...')
                 s.reset((10, 10))
                 break
 
             
-        redrawWindow(win)
+        redrawWindow(win, _font_module)
 
 if __name__ == '__main__':
     main()
