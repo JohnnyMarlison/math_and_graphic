@@ -129,18 +129,6 @@ class snake(object):
             else:
                 c.draw(surface)
 
-
-# def drawGrid(w, rows, surface):
-#     sizeBtwn = w // rows
-
-#     x = 0
-#     y = 0
-#     for l in range(rows):
-#         x = x + sizeBtwn
-#         y = y + sizeBtwn
-
-#         pygame.draw.line(surface, (255,255,255), (x,0),(x,w))
-#         pygame.draw.line(surface, (255,255,255), (0,y),(w,y))
         
 def get_score_text(font_module, snake):
 	return font_module.render('Score: ' + str((snake.get_length() - 1) * 10), True, (255, 255, 255))
@@ -152,7 +140,6 @@ def redrawWindow(surface, font_module):
     s.draw(surface)
     snack.draw(surface)
     surface.blit(get_score_text(font_module, s), (10, 500))
-    # drawGrid(width,rows, surface)
     pygame.display.update()
 
 
