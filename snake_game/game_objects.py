@@ -3,10 +3,10 @@ import random
 import pygame
 
 class cube(object):
-    rows = 20
-    w = 500
-    def __init__(self, start, dirnx = 1, dirny = 0, color = (255, 0, 0)):
-        self.pos = start
+    def __init__(self, start, rows, w, color = (255, 0, 0)):
+        self.pos   = start
+        self.rows  = rows
+        self.w     = w
         self.dirnx = 1
         self.dirny = 0
         self.color = color
@@ -36,9 +36,11 @@ class cube(object):
 class snake(object):
     body = []
     turns = {}
-    def __init__(self, color, pos):
+    def __init__(self, rows, w, color, pos):
         self.color = color
-        self.head = cube(pos)
+        self.rows = rows
+        self.w = w
+        self.head = cube(pos, rows, w)
         self.body.append(self.head)
         self.dirnx = 0
         self.dirny = 1
@@ -53,26 +55,25 @@ class snake(object):
 
             keys = pygame.key.get_pressed()
 
-            for key in keys:
-                if keys[pygame.K_LEFT]:
-                    self.dirnx = -1
-                    self.dirny = 0
-                    self.turns[self.head.pos[:]] = [self.dirnx, self.dirny]
+            if keys[pygame.K_LEFT]:
+                self.dirnx = -1
+                self.dirny = 0
+                self.turns[self.head.pos[:]] = [self.dirnx, self.dirny]
 
-                elif keys[pygame.K_RIGHT]:
-                    self.dirnx = 1
-                    self.dirny = 0
-                    self.turns[self.head.pos[:]] = [self.dirnx, self.dirny]
+            elif keys[pygame.K_RIGHT]:
+                self.dirnx = 1
+                self.dirny = 0
+                self.turns[self.head.pos[:]] = [self.dirnx, self.dirny]
 
-                elif keys[pygame.K_UP]:
-                    self.dirnx = 0
-                    self.dirny = -1
-                    self.turns[self.head.pos[:]] = [self.dirnx, self.dirny]
+            elif keys[pygame.K_UP]:
+                self.dirnx = 0
+                self.dirny = -1
+                self.turns[self.head.pos[:]] = [self.dirnx, self.dirny]
 
-                elif keys[pygame.K_DOWN]:
-                    self.dirnx = 0
-                    self.dirny = 1
-                    self.turns[self.head.pos[:]] = [self.dirnx, self.dirny]
+            elif keys[pygame.K_DOWN]:
+                self.dirnx = 0
+                self.dirny = 1
+                self.turns[self.head.pos[:]] = [self.dirnx, self.dirny]
 
         for i, c in enumerate(self.body):
             p = c.pos[:]
@@ -106,14 +107,15 @@ class snake(object):
         tail = self.body[-1]
         dx, dy = tail.dirnx, tail.dirny
 
+
         if dx == 1 and dy == 0:
-            self.body.append(cube((tail.pos[0]-1,tail.pos[1])))
+            self.body.append(cube((tail.pos[0]-1,tail.pos[1]), self.rows, self.w))
         elif dx == -1 and dy == 0:
-            self.body.append(cube((tail.pos[0]+1,tail.pos[1])))
+            self.body.append(cube((tail.pos[0]+1,tail.pos[1]), self.rows, self.w))
         elif dx == 0 and dy == 1:
-            self.body.append(cube((tail.pos[0],tail.pos[1]-1)))
+            self.body.append(cube((tail.pos[0],tail.pos[1]-1), self.rows, self.w))
         elif dx == 0 and dy == -1:
-            self.body.append(cube((tail.pos[0],tail.pos[1]+1)))
+            self.body.append(cube((tail.pos[0],tail.pos[1]+1), self.rows, self.w))
 
         self.body[-1].dirnx = dx
         self.body[-1].dirny = dy
