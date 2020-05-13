@@ -11,19 +11,20 @@ class InterfaceState(Enum):
 	MAIN_MENU = 1
 	PAUSE_MENU = 2
 	DEATH_MENU = 3
+	EXIT = 4
 
 
 def create_rect(x, y, size):
-	return [ [x - size[0]/2, y - size[1]/2],
-			 [x + size[0]/2, y - size[1]/2],
-			 [x + size[0]/2, y + size[1]/2],
-			 [x - size[0]/2, y + size[1]/2]]
+	return [ [x, y],
+			 [x + size[0], y],
+			 [x + size[0], y + size[1]],
+			 [x, y + size[1]]]
 
 def draw_rectagnle(surface, x, y, size, color = (255, 255, 255), font_module = None, text = ''):
-	draw.polygon(screen.get_surface(), color, create_rect(x, y, size))
+	pygame.draw.polygon(surface, color, create_rect(x, y, size))
 	if (font_module != None):
-		rend = font_module.render(goal_text1, True, (0, 255, 255))
-		surface.blit(rend1, (x + (size[0] - pygame.Surface.get_width(rend)) // 2, y + (size[1] - pygame.Surface.get_height(rend) // 2)))
+		rend = font_module.render(text, True, (125, 125, 255))
+		surface.blit(rend, (x + (size[0] - pygame.Surface.get_width(rend)) // 2, y + (size[1] - pygame.Surface.get_height(rend)) // 2))
 
 
 def set_footer_text(surface, width, size_grid, font_module, snake):
@@ -103,20 +104,70 @@ def keyboard_game_handler(snake):
 
 	return InterfaceState.GAME
 	
+def template_menu(surface, menu_text, font_module, width):
+	max_len_pixel = 0
+	heigth_button = width // 10
+	spacing = width // 50
+	for i in menu_text:
+		val = pygame.Surface.get_width(font_module.render(i, True, (0, 255, 255)))
+		if val > max_len_pixel:
+			max_len_pixel = val
+	max_len_pixel += 40
+	__pixel_menu_heigth = len(menu_text) * heigth_button + (len(menu_text) - 1) * spacing
+	y_start = (width - __pixel_menu_heigth) // 2
+	x_start = (width - max_len_pixel) // 2
+	print((x_start, y_start))
+	color_default = (255, 255, 255)
+	color_select  = (255, 0, 0)
+	item = 0
+	while (True):
+		y = y_start
+		for i in range(len(menu_text)):
+			if i == item:
+				draw_rectagnle(surface, x_start, y, (max_len_pixel, heigth_button), color_select, font_module, menu_text[i])
+			else:
+				draw_rectagnle(surface, x_start, y, (max_len_pixel, heigth_button), color_default, font_module, menu_text[i])
 
+			y += (heigth_button + spacing)
 
-def keyboard_handler(state, snake):
+		for event in pygame.event.get():
+			keys = pygame.key.get_pressed()
+
+			if keys[pygame.K_UP]:
+				item -= 1
+				if item < 0:
+					item = len(menu_text) - 1
+			elif keys[pygame.K_DOWN]:
+				item += 1
+				if item >= len(menu_text):
+					item = 0
+			elif keys[pygame.K_KP_ENTER]:
+				if item == 0:
+					return InterfaceState.GAME
+				elif item == 1:
+					return InterfaceState.EXIT
+		pygame.display.update()
+
+def keyboard_main_menu_handler(surface, font_module, width):
+	menu_text = ['New Game', 'Exit']
+	return template_menu(surface, menu_text, font_module, width)
+
+def keyboard_pause_menu_handler(surface, font_module, width):
+	menu_text = ['Continue', 'New game', 'Exit']
+	return template_menu(surface, menu_text, font_module, width)
+
+def keyboard_handler(surface, font_module, width, state, snake):
 	flag_new_move_event = False
 	for event in pygame.event.get():
 		if state == InterfaceState.GAME: # game time
 			state = keyboard_game_handler(snake)
 		elif state == InterfaceState.MAIN_MENU: # main menu
-			pass
+			state = keyboard_main_menu_handler(surface, font_module, width)
 		elif state == InterfaceState.PAUSE_MENU: # pause menu
-			pass
+			state = keyboard_pause_menu_handler(surface, font_module, width)
 		elif state == InterfaceState.DEATH_MENU: # end game menu
 			pass
-		else:
+		elif state == InterfaceState.EXIT:
 			pass
 	snake.move()
 
@@ -129,7 +180,8 @@ def game_process(window_width, size_grid):
 	_clock_module  = clock_init()
 	_snake         = snake_init(window_width, size_grid)
 	_snack         = snack_init(_snake, window_width, size_grid)
-	
+
+	keyboard_handler(_window_module, _font_module, window_width, InterfaceState.PAUSE_MENU, _snake)
 	while True:
 		pygame.time.delay(40)
 		_clock_module.tick(8)

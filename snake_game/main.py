@@ -5,7 +5,7 @@ from window_interface import *
 # big: 1000
 
 def main():
-    window_width = 1000
+    window_width = 800
     size_grid = 25
     game_process(window_width, size_grid)
 
