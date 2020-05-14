@@ -120,7 +120,7 @@ def template_menu(surface, menu_text, font_module, width, return_func):
 		val = pygame.Surface.get_width(font_module.render(i, True, (0, 255, 255)))
 		if val > max_len_pixel:
 			max_len_pixel = val
-	max_len_pixel += 40
+	max_len_pixel += 100
 	__pixel_menu_heigth = len(menu_text) * heigth_button + (len(menu_text) - 1) * spacing
 	y_start = (width - __pixel_menu_heigth) // 2
 	x_start = (width - max_len_pixel) // 2
@@ -170,7 +170,7 @@ def keyboard_pause_menu_handler(surface, font_module, width):
 		if x == 0:
 			return InterfaceState.GAME_CONTINUE
 		elif x == 1:
-			return InterfaceState.GAME_START
+			return InterfaceState.MAP_MENU
 		else:
 			return InterfaceState.EXIT_GAME
 	return template_menu(surface, menu_text, font_module, width, _tmp)

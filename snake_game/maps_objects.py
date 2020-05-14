@@ -57,7 +57,7 @@ class obstacle(object):
 		print('LOADING MAP: ' + get_maps_names()[map_type])
 
 		if map_type == MapDifficult.MAP_FREE:
-			pass
+			self.coord = []
 		elif map_type == MapDifficult.MAP_EASY:
 			self.coord = gen_easy_map_coord(self.size_x, self.size_y)
 		elif map_type == MapDifficult.MAP_MEDIUM:
