@@ -74,7 +74,7 @@ class snake(object):
         
 
     def reset(self, pos):
-        self.head = cube(pos)
+        self.head = cube(pos, self.rows, self.w)
         self.body = []
         self.body.append(self.head)
         self.turns = {}

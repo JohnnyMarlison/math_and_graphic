@@ -7,12 +7,17 @@ from enum import Enum
 from game_objects import *
 
 class InterfaceState(Enum):
-	GAME = 0
+	GAME_START = 0
 	MAIN_MENU = 1
 	PAUSE_MENU = 2
 	DEATH_MENU = 3
-	EXIT = 4
+	EXIT_APPLICATION = 4
+	EXIT_GAME = 5
+	GAME_CONTINUE = 6
 
+class ApplicationState(Enum):
+	RESTART = 0
+	CONTINUE = 1
 
 def create_rect(x, y, size):
 	return [ [x, y],
@@ -102,9 +107,9 @@ def keyboard_game_handler(snake):
 	elif keys[pygame.K_ESCAPE]:
 		return InterfaceState.PAUSE_MENU
 
-	return InterfaceState.GAME
+	return InterfaceState.GAME_CONTINUE
 	
-def template_menu(surface, menu_text, font_module, width):
+def template_menu(surface, menu_text, font_module, width, return_func):
 	max_len_pixel = 0
 	heigth_button = width // 10
 	spacing = width // 50
@@ -141,62 +146,133 @@ def template_menu(surface, menu_text, font_module, width):
 				item += 1
 				if item >= len(menu_text):
 					item = 0
-			elif keys[pygame.K_KP_ENTER]:
-				if item == 0:
-					return InterfaceState.GAME
-				elif item == 1:
-					return InterfaceState.EXIT
+			elif keys[pygame.K_RETURN] or keys[pygame.K_KP_ENTER]:
+				return return_func(item)
+				
 		pygame.display.update()
 
 def keyboard_main_menu_handler(surface, font_module, width):
 	menu_text = ['New Game', 'Exit']
-	return template_menu(surface, menu_text, font_module, width)
+	def _tmp(x):
+		if x == 0:
+			return InterfaceState.GAME_START
+		else:
+			return InterfaceState.EXIT_APPLICATION
+	return template_menu(surface, menu_text, font_module, width, _tmp)
 
 def keyboard_pause_menu_handler(surface, font_module, width):
 	menu_text = ['Continue', 'New game', 'Exit']
-	return template_menu(surface, menu_text, font_module, width)
+	def _tmp(x):
+		if x == 0:
+			return InterfaceState.GAME_CONTINUE
+		elif x == 1:
+			return InterfaceState.GAME_START
+		else:
+			return InterfaceState.EXIT_GAME
+	return template_menu(surface, menu_text, font_module, width, _tmp)
 
-def keyboard_handler(surface, font_module, width, state, snake):
-	flag_new_move_event = False
-	for event in pygame.event.get():
-		if state == InterfaceState.GAME: # game time
-			state = keyboard_game_handler(snake)
-		elif state == InterfaceState.MAIN_MENU: # main menu
-			state = keyboard_main_menu_handler(surface, font_module, width)
-		elif state == InterfaceState.PAUSE_MENU: # pause menu
-			state = keyboard_pause_menu_handler(surface, font_module, width)
-		elif state == InterfaceState.DEATH_MENU: # end game menu
-			pass
-		elif state == InterfaceState.EXIT:
-			pass
-	snake.move()
+def keyboard_death_menu_handler(surface, font_module, width):
+	menu_text = ['Restart', 'Exit']
+	def _tmp(x):
+		if x == 0:
+			return InterfaceState.GAME_START
+		else:
+			return InterfaceState.EXIT_GAME
+	return template_menu(surface, menu_text, font_module, width, _tmp)
 
-			
+window_width = 800
+size_grid = 25
 
-def game_process(window_width, size_grid):
+_font_module   = font_init()
+_window_module = window_init(window_width, size_grid)
+_clock_module  = clock_init()
+_snake         = snake_init(window_width, size_grid)
+_snack         = snack_init(_snake, window_width, size_grid)			
+
+def game_process(window_width, size_grid, _clock_module, _snake, _snack, handler):
 	rows = window_width // size_grid
-	_font_module   = font_init()
-	_window_module = window_init(window_width, size_grid)
-	_clock_module  = clock_init()
-	_snake         = snake_init(window_width, size_grid)
-	_snack         = snack_init(_snake, window_width, size_grid)
+	pygame.time.delay(40)
+	_clock_module.tick(8)
+	if _snake.body[0].pos == _snack.pos:
+		_snake.addCube()
+		_snack = snack_init(_snake, window_width, size_grid)
 
-	keyboard_handler(_window_module, _font_module, window_width, InterfaceState.PAUSE_MENU, _snake)
-	while True:
-		pygame.time.delay(40)
-		_clock_module.tick(8)
-		keyboard_handler(InterfaceState.GAME, _snake)
-		if _snake.body[0].pos == _snack.pos:
-			_snake.addCube()
-			_snack = snack_init(_snake, window_width, size_grid)
-	
-		for x in range(len(_snake.body)):
-			if _snake.body[x].pos in list(map(lambda z:z.pos,_snake.body[x + 1:])):
-				message_box('You Lose!', 'Play again...')
-				_snake.reset((10, 10))
-				break
+	_snake.move()
+	state = handler(_snake)
+
+	for x in range(len(_snake.body)):
+		if _snake.body[x].pos in list(map(lambda z:z.pos,_snake.body[x + 1:])):
+			message_box('You Lose!', 'Play again...')
+			_snake.reset((10, 10))
+			break
 	
 		redrawWindow(_window_module, window_width, size_grid, _snake, _snack, _font_module)
 	
-def main_interface_window():	
-	pass
+	return state
+
+# def keyboard_handler(surface, font_module, width, size_grid, state, snake):
+# 	global _clock_module, _snake, _snack
+# 	for event in pygame.event.get():
+# 		if state == InterfaceState.GAME_START: # game time
+# 			print('GAME_START')
+# 			print(_clock_module == None)
+# 			_clock_module  = clock_init()
+# 			_snake         = snake_init(window_width, size_grid)
+# 			_snack         = snack_init(_snake, window_width, size_grid)	
+# 			state = InterfaceState.GAME_CONTINUE
+# 		elif state == InterfaceState.MAIN_MENU: # main menu
+# 			print('MAIN_MENU')
+# 			state = keyboard_main_menu_handler(surface, font_module, width)
+# 		elif state == InterfaceState.PAUSE_MENU: # pause menu
+# 			print('PAUSE_MENU')
+# 			state = keyboard_pause_menu_handler(surface, font_module, width)
+# 		elif state == InterfaceState.DEATH_MENU: # end game menu
+# 			print('DEATH_MENU')
+# 			state = keyboard_death_menu_handler(surface, font_module, width)
+# 		elif state == InterfaceState.EXIT_APPLICATION:
+# 			print('EXIT_APPLICATION')
+# 			pass
+# 		elif state == InterfaceState.EXIT_GAME:
+# 			print('EXIT_GAME')
+# 			start = InterfaceState.MAIN_MENU
+# 		elif state == InterfaceState.GAME_CONTINUE:
+# 			print('GAME_CONTINUE')
+# 			state = game_process(width, size_grid, _clock_module, _snake, _snack, keyboard_game_handler)
+			
+# 	return state
+
+def keyboard_handler(surface, font_module, width, size_grid, state, snake):
+	global _clock_module, _snake, _snack
+	pygame.event.get()
+	if state == InterfaceState.GAME_START: # game time
+		print('GAME_START')
+		print(_clock_module == None)
+		_clock_module  = clock_init()
+		_snake         = snake_init(window_width, size_grid)
+		_snack         = snack_init(_snake, window_width, size_grid)	
+		state = InterfaceState.GAME_CONTINUE
+	elif state == InterfaceState.MAIN_MENU: # main menu
+		print('MAIN_MENU')
+		state = keyboard_main_menu_handler(surface, font_module, width)
+	elif state == InterfaceState.PAUSE_MENU: # pause menu
+		print('PAUSE_MENU')
+		state = keyboard_pause_menu_handler(surface, font_module, width)
+	elif state == InterfaceState.DEATH_MENU: # end game menu
+		print('DEATH_MENU')
+		state = keyboard_death_menu_handler(surface, font_module, width)
+	elif state == InterfaceState.EXIT_APPLICATION:
+		print('EXIT_APPLICATION')
+		pass
+	elif state == InterfaceState.EXIT_GAME:
+		print('EXIT_GAME')
+		start = InterfaceState.MAIN_MENU
+	elif state == InterfaceState.GAME_CONTINUE:
+		print('GAME_CONTINUE')
+		state = game_process(width, size_grid, _clock_module, _snake, _snack, keyboard_game_handler)
+			
+	return state
+
+def main_interface_window(window_width, size_grid):	
+	state = InterfaceState.MAIN_MENU
+	while 1:
+		state = keyboard_handler(_window_module, _font_module, window_width, size_grid, state, _snake)
