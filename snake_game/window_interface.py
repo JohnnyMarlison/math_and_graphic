@@ -2,9 +2,10 @@ import pygame
 from pygame import font
 import tkinter as tk
 from tkinter import messagebox
+from enum import Enum
 
 from game_objects import *
-from map_objects import *
+from maps_objects import *
 
 class InterfaceState(Enum):
 	GAME_START = 0
@@ -14,10 +15,42 @@ class InterfaceState(Enum):
 	EXIT_APPLICATION = 4
 	EXIT_GAME = 5
 	GAME_CONTINUE = 6
+	MAP_MENU = 7
 
-class ApplicationState(Enum):
-	RESTART = 0
-	CONTINUE = 1
+def font_init():
+	pygame.font.init()
+	_font_name = pygame.font.match_font('Times New Roman')
+	return pygame.font.Font(_font_name, 24)
+
+def window_init(win_width, size_grid):
+	return pygame.display.set_mode((win_width - (win_width // size_grid), win_width))
+
+def map_init(win_width, size_grid):
+	rows = win_width // size_grid
+	return obstacle((rows, rows - 1), win_width)
+
+def clock_init():
+	return pygame.time.Clock()
+
+def snake_init(win_width, size_grid):
+	rows = win_width // size_grid
+	size_game_field = win_width - (win_width // size_grid)
+	return snake(rows, size_game_field, (255, 0, 0), (10, 10))
+
+def snack_init(snake, win_width, size_grid):
+	rows = win_width // size_grid
+	size_game_field = win_width - (win_width // size_grid)
+	return cube(randomSnack(rows, snake), rows, size_game_field, color = (0, 255, 0))
+
+window_width = 800
+size_grid = 25
+
+font_module   = font_init()
+window_module = window_init(window_width, size_grid)
+clock_module  = clock_init()
+map_module    = map_init(window_width, size_grid)
+snake_var     = snake_init(window_width, size_grid)
+snack_var     = snack_init(snake_var, window_width, size_grid)
 
 def create_rect(x, y, size):
 	return [ [x, y],
@@ -42,44 +75,13 @@ def set_footer_text(surface, width, size_grid, font_module, snake):
 	surface.blit(rend2, (win_width - pygame.Surface.get_width(rend2) - 10, win_width))
 
 
-def redrawWindow(surface, width, size_grid, snake, snack, font_module):
+def redrawWindow(surface, width, size_grid, map_module, snake, snack, font_module):
     surface.fill((0, 0, 0))
+    map_module.draw(surface)
     snake.draw(surface)
     snack.draw(surface)
     set_footer_text(surface, width, size_grid, font_module, snake)
     pygame.display.update()
-
-
-def message_box(subject, content):
-    root = tk.Tk()
-    root.attributes("-topmost", True)
-    root.withdraw()
-    messagebox.showinfo(subject, content)
-    try:
-        root.destroy()
-    except:
-        pass
-
-def font_init():
-	pygame.font.init()
-	_font_name = pygame.font.match_font('Times New Roman')
-	return pygame.font.Font(_font_name, 24)
-
-def window_init(win_width, size_grid):
-	return pygame.display.set_mode((win_width - (win_width // size_grid), win_width))
-
-def clock_init():
-	return pygame.time.Clock()
-
-def snake_init(win_width, size_grid):
-	rows = win_width // size_grid
-	size_game_field = win_width - (win_width // size_grid)
-	return snake(rows, size_game_field, (255, 0, 0), (10, 10))
-
-def snack_init(snake, win_width, size_grid):
-	rows = win_width // size_grid
-	size_game_field = win_width - (win_width // size_grid)
-	return cube(randomSnack(rows, snake), rows, size_game_field, color = (0, 255, 0))
 
 def keyboard_game_handler(snake):
 	pygame.event.get()
@@ -156,7 +158,7 @@ def keyboard_main_menu_handler(surface, font_module, width):
 	surface.fill((0, 0, 0))
 	def _tmp(x):
 		if x == 0:
-			return InterfaceState.GAME_START
+			return InterfaceState.MAP_MENU
 		else:
 			return InterfaceState.EXIT_APPLICATION
 	return template_menu(surface, menu_text, font_module, width, _tmp)
@@ -183,17 +185,19 @@ def keyboard_death_menu_handler(surface, font_module, width):
 			return InterfaceState.EXIT_GAME
 	return template_menu(surface, menu_text, font_module, width, _tmp)
 
-window_width = 800
-size_grid = 25
-
-font_module   = font_init()
-window_module = window_init(window_width, size_grid)
-clock_module  = clock_init()
-snake_var     = snake_init(window_width, size_grid)
-snack_var     = snack_init(snake_var, window_width, size_grid)
+def keyboard_map_menu_handler(surface, map_module, font_module, width):
+	menu_text = get_maps_names().copy()
+	menu_text.append('Back')
+	surface.fill((0, 0, 0))
+	def _tmp(x):
+		if x < len(get_maps_names()):
+			return InterfaceState.GAME_START, x
+		else:
+			return InterfaceState.MAIN_MENU, MapDifficult.MAP_FREE
+	return template_menu(surface, menu_text, font_module, width, _tmp)
 
 def game_process(window_width, size_grid, handler):
-	global clock_module, snake_var, snack_var
+	global clock_module, snake_var, snack_var, map_module
 
 	rows = window_width // size_grid
 	pygame.time.delay(40)
@@ -201,21 +205,26 @@ def game_process(window_width, size_grid, handler):
 	if snake_var.body[0].pos == snack_var.pos:
 		snake_var.addCube()
 		snack_var = snack_init(snake_var, window_width, size_grid)
+		while map_module.check_cube_collision(snack_var):
+			snack_var = snack_init(snake_var, window_width, size_grid)
 
 	snake_var.move()
 	state = handler(snake_var)
 
-	for x in range(len(snake_var.body)):
-		if snake_var.body[x].pos in list(map(lambda z:z.pos,snake_var.body[x + 1:])):
+	if map_module.check_snake_colision(snake_var):
+		state = InterfaceState.DEATH_MENU
+	
+	for i in range(1, len(snake_var.body)):
+		if snake_var.get_head_cube().get_coord() == snake_var.body[i].get_coord():
 			state = InterfaceState.DEATH_MENU
 			break
-	
-		redrawWindow(window_module, window_width, size_grid, snake_var, snack_var, font_module)
+
+	redrawWindow(window_module, window_width, size_grid, map_module, snake_var, snack_var, font_module)
 	
 	return state
 
 def keyboard_handler(surface, font_module, width, size_grid, state):
-	global clock_module, snake_var, snack_var
+	global clock_module, snake_var, snack_var, map_module
 	pygame.event.get()
 	if state == InterfaceState.GAME_CONTINUE:
 		print('GAME_CONTINUE')
@@ -223,7 +232,7 @@ def keyboard_handler(surface, font_module, width, size_grid, state):
 	elif state == InterfaceState.GAME_START: # game time
 		print('GAME_START')
 		snake_var.reset((10, 10))
-		snack_var     = snack_init(snake_var, window_width, size_grid)
+		snack_var = snack_init(snake_var, window_width, size_grid)
 		state = InterfaceState.GAME_CONTINUE
 	elif state == InterfaceState.MAIN_MENU: # main menu
 		print('MAIN_MENU')
@@ -234,11 +243,14 @@ def keyboard_handler(surface, font_module, width, size_grid, state):
 	elif state == InterfaceState.DEATH_MENU: # end game menu
 		print('DEATH_MENU')
 		state = keyboard_death_menu_handler(surface, font_module, width)
-	elif state == InterfaceState.EXIT_APPLICATION:
+	elif state == InterfaceState.EXIT_APPLICATION: # exit from application
 		print('EXIT_APPLICATION')
-	elif state == InterfaceState.EXIT_GAME:
+	elif state == InterfaceState.EXIT_GAME: # exit to main menu from game
 		print('EXIT_GAME')
 		state = InterfaceState.MAIN_MENU
+	elif state == InterfaceState.MAP_MENU: # menu map
+		state, nmap = keyboard_map_menu_handler(surface, map_module, font_module, width)
+		map_module.set_map(nmap)
 			
 	return state
 
