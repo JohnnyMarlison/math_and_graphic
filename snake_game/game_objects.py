@@ -30,6 +30,9 @@ class cube(object):
             circleMiddle2 = (i * dis + dis - radius * 2, j * dis + 8)
             pygame.draw.circle(surface, (0, 0, 0), circleMiddle, radius)
             pygame.draw.circle(surface, (0, 0, 0), circleMiddle2, radius)
+
+    def get_coord():
+        return self.pos
         
 
 
@@ -106,6 +109,12 @@ class snake(object):
                 c.draw(surface, True)
             else:
                 c.draw(surface)
+
+    def get_head_feature_cube():
+        fc = self.head.get_coord() # Feature Coordinates
+        fd = self.turns[0]         # Feature Direction
+        return cube((fc[0] + fd[0], fc[1] + fd[1]), self.rows, self.w)
+
 
 def randomSnack(rows, item):
 

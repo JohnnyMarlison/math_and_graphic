@@ -2,9 +2,9 @@ import pygame
 from pygame import font
 import tkinter as tk
 from tkinter import messagebox
-from enum import Enum
 
 from game_objects import *
+from map_objects import *
 
 class InterfaceState(Enum):
 	GAME_START = 0
@@ -35,7 +35,7 @@ def draw_rectagnle(surface, x, y, size, color = (255, 255, 255), font_module = N
 def set_footer_text(surface, width, size_grid, font_module, snake):
 	win_width = width - (width // size_grid)
 	goal_text1 = 'Score: ' + str((snake.get_length() - 1) * 10) 
-	goal_text1 += '    Record: ' + str('None') 
+	goal_text1 += '      Record: ' + str('None') 
 	rend1 = font_module.render(goal_text1, True, (255, 255, 255))
 	rend2 = font_module.render('Pause: Press Esc', True, (255, 255, 255))
 	surface.blit(rend1, (10, win_width))
@@ -208,7 +208,6 @@ def game_process(window_width, size_grid, handler):
 	for x in range(len(snake_var.body)):
 		if snake_var.body[x].pos in list(map(lambda z:z.pos,snake_var.body[x + 1:])):
 			state = InterfaceState.DEATH_MENU
-			snake_var.reset((10, 10))
 			break
 	
 		redrawWindow(window_module, window_width, size_grid, snake_var, snack_var, font_module)
