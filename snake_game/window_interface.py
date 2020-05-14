@@ -20,7 +20,8 @@ class InterfaceState(Enum):
 def font_init():
 	pygame.font.init()
 	_font_name = pygame.font.match_font('Times New Roman')
-	return pygame.font.Font(_font_name, 24)
+	# return pygame.font.Font(_font_name, 24)
+	return pygame.font.Font(_font_name, 30)
 
 def window_init(win_width, size_grid):
 	return pygame.display.set_mode((win_width - (win_width // size_grid), win_width))
@@ -58,10 +59,10 @@ def create_rect(x, y, size):
 			 [x + size[0], y + size[1]],
 			 [x, y + size[1]]]
 
-def draw_rectagnle(surface, x, y, size, color = (255, 255, 255), font_module = None, text = ''):
+def draw_rectagnle(surface, x, y, size, color = (255, 255, 255), color_text = (0, 0, 0), font_module = None, text = ''):
 	pygame.draw.polygon(surface, color, create_rect(x, y, size))
 	if (font_module != None):
-		rend = font_module.render(text, True, (0, 0, 0))
+		rend = font_module.render(text, True, color_text)
 		surface.blit(rend, (x + (size[0] - pygame.Surface.get_width(rend)) // 2, y + (size[1] - pygame.Surface.get_height(rend)) // 2))
 
 
@@ -112,7 +113,7 @@ def keyboard_game_handler(snake):
 
 	return InterfaceState.GAME_CONTINUE
 	
-def template_menu(surface, menu_text, font_module, width, return_func):
+def template_menu(surface, name_text, menu_text, font_module, width, return_func):
 	max_len_pixel = 0
 	heigth_button = width // 10
 	spacing = width // 50
@@ -127,13 +128,14 @@ def template_menu(surface, menu_text, font_module, width, return_func):
 	color_default = (255, 255, 255)
 	color_select  = (255, 0, 0)
 	item = 0
+	draw_rectagnle(surface, x_start, y_start - (spacing + heigth_button), (max_len_pixel, heigth_button), (0, 0, 0), (255, 255, 255), font_module, name_text)
 	while (True):
 		y = y_start
 		for i in range(len(menu_text)):
 			if i == item:
-				draw_rectagnle(surface, x_start, y, (max_len_pixel, heigth_button), color_select, font_module, menu_text[i])
+				draw_rectagnle(surface, x_start, y, (max_len_pixel, heigth_button), color_select, (0, 0, 0), font_module, menu_text[i])
 			else:
-				draw_rectagnle(surface, x_start, y, (max_len_pixel, heigth_button), color_default, font_module, menu_text[i])
+				draw_rectagnle(surface, x_start, y, (max_len_pixel, heigth_button), color_default, (0, 0, 0), font_module, menu_text[i])
 
 			y += (heigth_button + spacing)
 
@@ -154,6 +156,7 @@ def template_menu(surface, menu_text, font_module, width, return_func):
 		pygame.display.update()
 
 def keyboard_main_menu_handler(surface, font_module, width):
+	name_text = 'Snake Game :3'
 	menu_text = ['New Game', 'Exit']
 	surface.fill((0, 0, 0))
 	def _tmp(x):
@@ -161,9 +164,10 @@ def keyboard_main_menu_handler(surface, font_module, width):
 			return InterfaceState.MAP_MENU
 		else:
 			return InterfaceState.EXIT_APPLICATION
-	return template_menu(surface, menu_text, font_module, width, _tmp)
+	return template_menu(surface, name_text, menu_text, font_module, width, _tmp)
 
 def keyboard_pause_menu_handler(surface, font_module, width):
+	name_text = 'Pause -_-'
 	menu_text = ['Continue', 'New game', 'Exit']
 	surface.fill((0, 0, 0))
 	def _tmp(x):
@@ -173,9 +177,10 @@ def keyboard_pause_menu_handler(surface, font_module, width):
 			return InterfaceState.MAP_MENU
 		else:
 			return InterfaceState.EXIT_GAME
-	return template_menu(surface, menu_text, font_module, width, _tmp)
+	return template_menu(surface, name_text, menu_text, font_module, width, _tmp)
 
 def keyboard_death_menu_handler(surface, font_module, width):
+	name_text = 'You Lose =('
 	menu_text = ['Restart', 'Exit']
 	surface.fill((0, 0, 0))
 	def _tmp(x):
@@ -183,9 +188,10 @@ def keyboard_death_menu_handler(surface, font_module, width):
 			return InterfaceState.GAME_START
 		else:
 			return InterfaceState.EXIT_GAME
-	return template_menu(surface, menu_text, font_module, width, _tmp)
+	return template_menu(surface, name_text, menu_text, font_module, width, _tmp)
 
 def keyboard_map_menu_handler(surface, map_module, font_module, width):
+	name_text = 'Choose Map ^_^'
 	menu_text = get_maps_names().copy()
 	menu_text.append('Back')
 	surface.fill((0, 0, 0))
@@ -194,7 +200,7 @@ def keyboard_map_menu_handler(surface, map_module, font_module, width):
 			return InterfaceState.GAME_START, x
 		else:
 			return InterfaceState.MAIN_MENU, MapDifficult.MAP_FREE
-	return template_menu(surface, menu_text, font_module, width, _tmp)
+	return template_menu(surface, name_text, menu_text, font_module, width, _tmp)
 
 def game_process(window_width, size_grid, handler):
 	global clock_module, snake_var, snack_var, map_module
@@ -255,6 +261,7 @@ def keyboard_handler(surface, font_module, width, size_grid, state):
 	return state
 
 def main_interface_window(window_width, size_grid):	
+	pygame.display.set_caption('Snake Game')
 	state = InterfaceState.MAIN_MENU
 	while state != InterfaceState.EXIT_APPLICATION:
 		state = keyboard_handler(window_module, font_module, window_width, size_grid, state)

@@ -29,7 +29,7 @@ def gen_easy_map_coord(size_x, size_y):
 	for i in range(10, size_y - 15, 1):
 		coord.append((6, i))
 
-	# Generate third obstacle
+	# Generate fours obstacle
 	for i in range(10, size_y - 12, 1):
 		coord.append((size_x - 5, i))
 
@@ -42,6 +42,22 @@ def gen_medium_map_coord(size_x, size_y):
 
 def gen_hard_map_coord(size_x, size_y):
 	coord = []
+
+	# Generate first obstacle
+	for i in range(0, size_x - 12):
+		coord.append((i, 11))
+
+	# Generate second obstacle
+	for i in range(size_x - 1, 12, -1):
+		coord.append((i, size_y - 11))
+
+	# Generate third obstacle
+	for i in range(0, size_y - 12):
+		coord.append((size_x - 11, i))
+
+	# Generate fours obstacle
+	for i in range(size_y, 12, -1):
+		coord.append((11, i))
 
 	return coord
 
