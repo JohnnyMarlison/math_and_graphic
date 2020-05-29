@@ -38,6 +38,24 @@ def gen_easy_map_coord(size_x, size_y):
 def gen_medium_map_coord(size_x, size_y):
 	coord = []
 
+	for i in range(6, size_x - 10, 1):
+		coord.append((i, 6))
+
+	for i in range(11, size_x - 5, 1):
+		coord.append((i, size_y - 5))
+
+	for i in range(6, size_y - 11, 1):
+		coord.append((6, i))
+
+	for i in range(11, size_y - 5, 1):
+		coord.append((size_x - 6, i))
+
+	for i in range(11, size_x - 5, 1):
+		coord.append((i, 11))
+
+	for i in range(6, size_x - 11):
+		coord.append((i, size_y - 11))
+
 	return coord
 
 def gen_hard_map_coord(size_x, size_y):
