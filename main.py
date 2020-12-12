@@ -1,7 +1,7 @@
 from math import *
 from numba import njit
 
-@njit
+@njit(fastmath=True, parallel=True)
 def pi_from_euler(count_iters):
     res_pi = 0
     for i in range(1, count_iters + 1):
@@ -11,7 +11,7 @@ def pi_from_euler(count_iters):
     return res_pi
 
 
-@njit
+@njit(fastmath=True, parallel=True)
 def pi_from_walles(count_iters):
     res_pi = 1
     i = 0
@@ -28,7 +28,7 @@ def pi_from_walles(count_iters):
     return res_pi
 
 
-@njit
+@njit(fastmath=True, parallel=True)
 def pi_from_viet(count_iters):
     res_pi = 1
     up = 0
@@ -39,7 +39,7 @@ def pi_from_viet(count_iters):
     return res_pi
 
 
-@njit
+@njit(fastmath=True, parallel=True)
 def pi_from_madhava1(count_iters):
     res_pi = 0
     j = 1
@@ -52,7 +52,7 @@ def pi_from_madhava1(count_iters):
     return res_pi
 
 
-@njit
+@njit(fastmath=True, parallel=True)
 def pi_from_madhava2(count_iters):
     res_pi = 0
     for i in range(count_iters):
