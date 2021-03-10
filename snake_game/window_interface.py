@@ -69,7 +69,7 @@ def draw_rectagnle(surface, x, y, size, color = (255, 255, 255), color_text = (0
 def set_footer_text(surface, width, size_grid, font_module, snake):
 	win_width = width - (width // size_grid)
 	goal_text1 = 'Score: ' + str((snake.get_length() - 1) * 10) 
-	goal_text1 += '      Record: ' + str('None') 
+	# goal_text1 += '      Record: ' + str('None') 
 	rend1 = font_module.render(goal_text1, True, (255, 255, 255))
 	rend2 = font_module.render('Pause: Press Esc', True, (255, 255, 255))
 	surface.blit(rend1, (10, win_width))
@@ -180,7 +180,7 @@ def keyboard_pause_menu_handler(surface, font_module, width):
 	return template_menu(surface, name_text, menu_text, font_module, width, _tmp)
 
 def keyboard_death_menu_handler(surface, font_module, width):
-	name_text = 'You Lose =('
+	name_text = 'You Lose :('
 	menu_text = ['Restart', 'Exit']
 	surface.fill((0, 0, 0))
 	def _tmp(x):
