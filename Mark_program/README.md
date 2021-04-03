@@ -1,5 +1,2 @@
-# Langton-ant
-Langton`s ant in Python, Pygame
+README
 
-
-![langton_ant](screenshot/0.png "langton_ant")
