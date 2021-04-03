@@ -24,8 +24,7 @@ def count_elem(arr):
     a = list(arr)
     val_min, idx_min = min((abs(val_min), idx_min) for (idx_min, val_min) in enumerate(a))
     val_max, idx_max = max((abs(val_max), idx_max) for (idx_max, val_max) in enumerate(a))
-    # print(val_max, val_min)
-    # print(idx_max, idx_min)
+    
     if idx_max > idx_min:
         return idx_max - idx_min
     else:
