@@ -16,7 +16,7 @@ class Ant:
 
         SIZE = self.app.CELL_SIZE
         rect = self.x * SIZE, self.y * SIZE, SIZE - 1, SIZE - 1
-        if value:
+        if value:   
             pg.draw.rect(self.app.screen, pg.Color('white'), rect)
         else:
             pg.draw.rect(self.app.screen, self.color, rect)
@@ -28,8 +28,8 @@ class Ant:
 
 
 class App:
-    def __init__(self, WIDTH=1920, HEIGHT=1000, CELL_SIZE=10):
-        pg.init()
+    def __init__(self, WIDTH=1600   , HEIGHT=900, CELL_SIZE=10):
+        # pg.init()
         self.screen = pg.display.set_mode([WIDTH, HEIGHT])
         self.clock = pg.time.Clock()
 

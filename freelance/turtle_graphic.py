@@ -9,6 +9,26 @@ st(Dx, Dy)
 Nmax = 1000
 setworldcoordinates(aX[0], aY[0], aX[1], aY[1])
 
+def MyFunc():
+    up()
+    width(5)
+    color("black")
+    dx = (aX[1] - aX[0])/Nmax
+    goto(-7, 3)
+    up()
+    down()
+    goto(-3, 3)
+    up()
+    down()
+    right(90)
+
+    for i in range(93):
+        left(1.9)
+        forward(0.1)
+
+    goto(6, -3)
+    goto(11, 2)
+
 def coordinate_axis():
     speed(20)
     up()
@@ -46,24 +66,12 @@ def numerical_marks():
         up()
         write(i)
 
-coordinate_axis()
-numerical_marks()
-width(5)
-color("black")
-dx = (aX[1] - aX[0])/Nmax
-goto(-7, 3)
-up()
-down()
-goto(-3, 3)
-up()
-down()
-right(90)
 
-for i in range(93):
-    left(1.9)
-    forward(0.1)
+def main():
+    coordinate_axis()
+    numerical_marks()
+    MyFunc()
+    done()
 
-goto(6, -3)
-goto(11, 2)
-done()
-
+if __name__ == "__main__":
+    main()

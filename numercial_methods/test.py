@@ -1,12 +1,3 @@
-# имя проекта: numpy-example
-# номер версии: 1.0
-# имя файла: gauss.py
-# автор и его учебная группа: Е. Волков, ЭУ-142
-# дата создания: 20.03.2019
-# дата последней модификации: 25.03.2019
-# связанные файлы: нет
-# описание: решение СЛАУ методом Гаусса
-# версия Python: 3.6
 # --- исходные данныеx
 myA = [
     [1.0, -2.0, 3.0, -4.0],
@@ -30,30 +21,26 @@ def FancyPrint(A, B, selected):
             print("\t{1:10.2f}{0}".format(" " if (selected is None or selected != (row, col)) else "*", A[row][col]), end='')
 
     print("\t) * (\tX{0}) = (\t{1:10.2f})".format(row + 1, B[row]))
-# --- end of вывод системы на экран
 # --- перемена местами двух строк системы
 
 
 def SwapRows(A, B, row1, row2):
     A[row1], A[row2] = A[row2], A[row1]
     B[row1], B[row2] = B[row2], B[row1]
-# --- end of перемена местами двух строк системы
 # --- деление строки системы на число
 
 
 def DivideRow(A, B, row, divider):
     A[row] = [a / divider for a in A[row]]
     B[row] /= divider
-# --- end of деление строки системы на число
 # --- сложение строки системы с другой строкой, умноженной на число
 
 
 def CombineRows(A, B, row, source_row, weight):
     A[row] = [(a + k * weight) for a, k in zip(A[row], A[source_row])]
     B[row] += B[source_row] * weight    
-
-# --- end of сложение строки системы с другой строкой, умноженной на число
 # --- решение системы методом Гаусса (приведением к треугольному виду)
+
 def Gauss(A, B):
     column=0
     while (column < len(B)):
@@ -93,7 +80,6 @@ def Gauss(A, B):
     print("\n".join("X{0} =\t{1:10.2f}".format(i + 1, x) for i, x in enumerate(X)))
     return X
 
-# --- end of решение системы методом Гаусса (приведением к треугольному виду)
 print("Исходная система:")
 FancyPrint(myA, myB, None)
 print("Решаем:")
