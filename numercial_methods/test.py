@@ -10,7 +10,6 @@ myB = [
     -3.0,
     8.0,
     5.0]
-# --- end of исходные данные
 # --- вывод системы на экран
 
 
@@ -42,14 +41,15 @@ def CombineRows(A, B, row, source_row, weight):
 # --- решение системы методом Гаусса (приведением к треугольному виду)
 
 def Gauss(A, B):
-    column=0
+    column = ч0
     while (column < len(B)):
         print("Ищем максимальный по модулю элемент в {0}-м столбце: ".format(column + 1))
-        current_row=None
+        current_row = None
     
         for r in range(column, len(A)):
             if current_row is None or abs(A[r][column]) > abs(A[current_row][column]):
                 current_row = r
+        
         if current_row is None:
             print("решений нет")
             return None
@@ -73,14 +73,20 @@ def Gauss(A, B):
         column += 1
 
     print("Матрица приведена к треугольному виду, считаем решение")
-    X=[0 for b in B]
+    X = [0 for b in B]
     for i in range(len(B) - 1, -1, -1):
-        X[i]=B[i] - sum(x * a for x, a in zip(X[(i + 1):], A[i][(i + 1):]))
+        X[i] = B[i] - sum(x * a for x, a in zip(X[(i + 1):], A[i][(i + 1):]))
     print("Получили ответ:")
-    print("\n".join("X{0} =\t{1:10.2f}".format(i + 1, x) for i, x in enumerate(X)))
+    print("\n".join("X{0} = \t {1:10.2f}".format(i + 1, x) for i, x in enumerate(X)))
     return X
 
-print("Исходная система:")
-FancyPrint(myA, myB, None)
-print("Решаем:")
-Gauss(myA, myB)
+
+def main():
+    print("Исходная система:")
+    FancyPrint(myA, myB, None)
+    print("Решаем:")
+    Gauss(myA, myB)
+
+
+if __name__ == "__main__":
+    main()

@@ -2,6 +2,23 @@ import pygame as pg
 from collections import deque
 from random import choice, randrange
 
+class Food:
+    def __init__(self, app, pos, color):
+        self.app = app
+        self.color = color
+        self.x, self.y = pos
+
+    def appear(self):
+        value = self.app.grid[self.y][self.x]
+        self.app.grid[self.y][self.x] = not value
+        SIZE = self.app.CELL_SIZE
+        rect = self.x * SIZE, self.y * SIZE, SIZE - 1, SIZE - 1
+        
+        if value:   
+            pg.draw.rect(self.app.screen, pg.Color('white'), rect)
+        else:
+            pg.draw.rect(self.app.screen, pg.Color('red'), rect)
+
 
 class Ant:
     def __init__(self, app, pos, color):
@@ -28,7 +45,7 @@ class Ant:
 
 
 class App:
-    def __init__(self, WIDTH=1600   , HEIGHT=900, CELL_SIZE=10):
+    def __init__(self, WIDTH=1600, HEIGHT=900, CELL_SIZE=10):
         # pg.init()
         self.screen = pg.display.set_mode([WIDTH, HEIGHT])
         self.clock = pg.time.Clock()
@@ -36,9 +53,10 @@ class App:
         self.CELL_SIZE = CELL_SIZE
         self.ROWS, self.COLS = HEIGHT // CELL_SIZE, WIDTH // CELL_SIZE
         self.grid = [[0 for col in range(self.COLS)] for row in range(self.ROWS)]
-
-        self.ants = [Ant(self, [randrange(self.COLS), randrange(self.ROWS)], self.get_color()) for i in range(5)]
-
+        # count colonies
+        self.ants = [Ant(self, [randrange(self.COLS), randrange(self.ROWS)], self.get_color()) for i in range(20)]
+        self.foods = [Food(self, [randrange(self.COLS), randrange(self.ROWS)], self.get_color()) for i in range(100)]
+    
     @staticmethod
     def get_color():
         channel = lambda: randrange(30, 220)
@@ -47,6 +65,7 @@ class App:
     def run(self):
         while True:
             [ant.run() for ant in self.ants]
+            [food.appear() for food in self.foods]
 
             [exit() for i in pg.event.get() if i.type == pg.QUIT]
             pg.display.flip()

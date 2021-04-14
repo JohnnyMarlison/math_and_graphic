@@ -26,7 +26,7 @@ class Ant:
 
 
 class App:
-    def __init__(self, WIDTH=1600, HEIGHT=900, CELL_SIZE=6):
+    def __init__(self, WIDTH=1600, HEIGHT=900, CELL_SIZE=10):
         pg.init()
         self.screen = pg.display.set_mode([WIDTH, HEIGHT])
         self.clock = pg.time.Clock()
