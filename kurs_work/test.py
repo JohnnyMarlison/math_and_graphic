@@ -2,7 +2,7 @@ from dimod import dimod
 from dimod.reference.samplers import ExactSolver
 import neal
 
-def createDigPart(letter: str, count :int, value: int):
+def createDigPart(letter: str, count: int, value: int):
     tmpDig = dict()
     for i in range(1, count+1):
         tmpDig[letter+str(i)] = value
@@ -50,7 +50,7 @@ def fillMatrixC3(node1: str, node2: str, count: int, value: int):
             #a = i
             #i = tmpa
         tmpMat[node1+str(i), node2+str(a)] = value
-        tmpMat[node1+str(a), node2+str(i)] = value # damit die kante in beide richtungen nicht existiert
+        tmpMat[node1+str(a), node2+str(i)] = value 
     return tmpMat
 
 def printMatrix(dig: dict, mat: dict, nodes:list, count: int):
@@ -82,19 +82,19 @@ def printMatrix(dig: dict, mat: dict, nodes:list, count: int):
     print(headerRow+rows)
 
     
-#nodes = ['a', 'b', 'c', 'd']
+# nodes = ['a', 'b', 'c', 'd']
 
-#testDig = dict()
-#testDig = createDig(nodes, 4, -2)
-#print(testDig)
+# testDig = dict()
+# testDig = createDig(nodes, 4, -2)
+# print(testDig)
 
-#testMat = dict()
-#testMat = fillMatrixC1(nodes, 4, 2)
-#print(testMat)
+# testMat = dict()
+# testMat = fillMatrixC1(nodes, 4, 2)
+# print(testMat)
 
-#testMat = fillMatrixC2(nodes, 4, 2)
-#print(testMat)
-#exit()
+# testMat = fillMatrixC2(nodes, 4, 2)
+# print(testMat)
+# exit()
 
 nodes = ['a', 'b', 'c', 'd']
 length = len(nodes)
